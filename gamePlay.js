@@ -24,6 +24,7 @@ var wrongString;
 
 var wrongArray = [];
 
+var correctCount;
 
 function start(){
   wrongArray = [];
@@ -32,6 +33,7 @@ function start(){
   wrongString = '';
   noCount = 0;
   guessLeft = 5;
+  correctCount = 0;
   choosenWord = new Word();
   for (var i=0; i< choosenWord.word.length; i++) {
     wordArray[i] = "_";
@@ -52,18 +54,24 @@ function userGuess() {
 
   ]).then(function(answer) {
       for (var i = 0; i < choosenWord.letters.length; i++) {
-        if (answer.guess == choosenWord.letters[i]) {
+        if (answer.guess == choosenWord.letters[i] ) {
           wordArray[i] = answer.guess;
           wordString = wordArray.join(' ');
-          choosenWord.correctGuesses.push(answer.guess);
+          correctCount ++;
+          if (choosenWord.correctGuesses.indexOf(answer.guess) === -1) {
+              choosenWord.correctGuesses.push(answer.guess);
+          }
         }
         else {
           noCount ++;
           if (choosenWord.wrongGuesses.indexOf(answer.guess) === -1  && noCount != choosenWord.letters.length) {
               choosenWord.wrongGuesses.push(answer.guess);
-              guessLeft --;
           } 
         }
+
+      }
+      if (noCount === choosenWord.length) {
+        guessLeft --;
       }
       for (var i = 0; i < choosenWord.wrongGuesses.length; i++) {
         if (wrongArray.indexOf(choosenWord.wrongGuesses[i])) {
@@ -83,7 +91,7 @@ function userGuess() {
         }
 
         ]).then(function(input) {
-          if (input = true) {
+          if (input.playAgain === true) {
             start();
           }
           else {
@@ -91,17 +99,17 @@ function userGuess() {
           }
         })
       }
-      else if (guessLeft > 0 && choosenWord.correctGuesses.length === choosenWord.letters.length) {
+      else if (guessLeft > 0 && correctCount === choosenWord.letters.length) {
           console.log("YAY you win!");
           inquirer.prompt([
           {
             type: "confirm",
             message: "Do you want to play again?",
-            name: "playAgain"
+            name: "playAgain2"
           }
 
-          ]).then(function(input) {
-            if (input = true) {
+          ]).then(function(input2) {
+            if (input2.playAgain2 === true) {
               start();
             }
             else {
